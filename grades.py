@@ -55,7 +55,7 @@ def is_passing(score: float) -> bool:
         True if score is greater than 60, False otherwise.
 
     Raises:
-        ValueError: If score is outside the range 0 to 100.
+        ValueError: If score is outside the of range 0 to 100.
     """
     if score < 0 or score > 100:
         raise ValueError(f"Score must be between 0 and 100, got {score}")
