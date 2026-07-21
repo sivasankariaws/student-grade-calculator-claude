@@ -1,0 +1,81 @@
+# .github/workflows/claude_review.yml
+# GitHub Actions workflow: Claude Code automated PR review
+# Triggers on every Pull Request to main
+# Uses the official Anthropic Claude Code GitHub Action
+
+name: Claude Code PR Review
+
+on:
+  pull_request:
+    branches: [ main ]
+    types: [ opened, synchronize, reopened ]
+
+jobs:
+  claude-review:
+    name: Claude Code Automated Review
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      id-token: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          pip install pytest
+
+      - name: Run tests
+        run: |
+          pytest tests/ -v --tb=short
+        continue-on-error: false
+
+      - name: Claude Code Review
+        uses: anthropics/claude-code-action@beta
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          # Review prompt — Claude Code reads CLAUDE.md and checks the PR
+          direct_prompt: |
+            Read CLAUDE.md in this repository to understand the project standards.
+            Then review every Python file changed in this pull request.
+
+            Check for ALL of the following and report clearly:
+
+            BLOCKING ISSUES (will fail this workflow if found):
+            - Any function missing type hints
+            - Any function missing a docstring
+            - Any new function with no corresponding test
+            - Any function longer than 20 lines
+
+            WARNINGS (report but do not fail):
+            - Magic numbers used without named constants
+            - Functions with more than 3 parameters
+            - Missing edge case tests
+
+            Format your response as:
+
+            ## Claude Code Review
+
+            ### BLOCKING ISSUES
+            (list each issue with file, function name, and exact problem)
+
+            ### WARNINGS
+            (list each warning with file and explanation)
+
+            ### SUMMARY
+            (one sentence: APPROVED or CHANGES REQUIRED)
+
+            If there are any BLOCKING ISSUES, end your response with exactly:
+            REVIEW_STATUS: BLOCKED
+
+            If there are no blocking issues, end with:
+            REVIEW_STATUS: APPROVED
