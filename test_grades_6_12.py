@@ -1,11 +1,12 @@
 # tests/test_grades.py — Student Grade Calculator Tests
 
 import pytest
-from grades import (
+from grades_6_12 import (
     calculate_letter_grade,
     calculate_average,
     calculate_gpa,
     get_student_summary,
+    is_passing,
 )
 
 
@@ -30,6 +31,26 @@ def test_calculate_letter_grade_invalid_above_100():
 def test_calculate_letter_grade_invalid_negative():
     with pytest.raises(ValueError):
         calculate_letter_grade(-5)
+
+
+# ── is_passing ──────────────────────────────────────────────────────────────
+
+def test_is_passing_above_threshold():
+    assert is_passing(75) is True
+
+def test_is_passing_below_threshold():
+    assert is_passing(45) is False
+
+def test_is_passing_boundary_exactly_60():
+    assert is_passing(60) is False
+
+def test_is_passing_invalid_above_100():
+    with pytest.raises(ValueError):
+        is_passing(110)
+
+def test_is_passing_invalid_negative():
+    with pytest.raises(ValueError):
+        is_passing(-5)
 
 
 # ── calculate_average ──────────────────────────────────────────────────────
