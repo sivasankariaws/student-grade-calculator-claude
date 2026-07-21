@@ -1,7 +1,7 @@
 # tests/test_grades.py — Student Grade Calculator Tests
 
 import pytest
-from grades_6_12 import (
+from grades import (
     calculate_letter_grade,
     calculate_average,
     calculate_gpa,
