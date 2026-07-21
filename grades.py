@@ -16,6 +16,8 @@ GPA_POINTS = {
     "F": 0.0,
 }
 
+PASSING_THRESHOLD = 60
+
 
 def calculate_letter_grade(score: float) -> str:
     """Convert a numeric score to a letter grade.
@@ -41,6 +43,23 @@ def calculate_letter_grade(score: float) -> str:
         return "D"
     else:
         return "F"
+
+
+def is_passing(score: float) -> bool:
+    """Determine whether a numeric score is passing.
+
+    Args:
+        score: Numeric score between 0 and 100.
+
+    Returns:
+        True if score is greater than 60, False otherwise.
+
+    Raises:
+        ValueError: If score is outside the of range 0 to 100.
+    """
+    if score < 0 or score > 100:
+        raise ValueError(f"Score must be between 0 and 100, got {score}")
+    return score > PASSING_THRESHOLD
 
 
 def calculate_average(scores: list[float]) -> float:
@@ -79,7 +98,6 @@ def calculate_gpa(letter_grades: list[str]) -> float:
             raise ValueError(f"Invalid grade '{grade}'. Must be A, B, C, D, or F.")
     total_points = sum(GPA_POINTS[grade] for grade in letter_grades)
     return round(total_points / len(letter_grades), 2)
-
 
 def get_student_summary(student_name: str, scores: list[float]) -> str:
     """Generate a formatted academic summary for a student.
